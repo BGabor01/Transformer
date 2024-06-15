@@ -45,26 +45,3 @@ class InputEmbedding(nn.Module):
         embed_with_pos = self.pos_encode(embeddings)
 
         return embed_with_pos
-
-
-if __name__ == "__main__":
-
-    sentence = "The apple is on the tree"
-    tokens = sentence.lower().split()
-    vocab = {word: idx for idx, word in enumerate(tokens)}
-    indexed_tokens = [vocab[word] for word in tokens]
-
-    print("Tokens:", tokens)
-    print("Vocab:", vocab)
-    print("Indexed Tokens:", indexed_tokens)
-
-    vocab_size = 100
-    embedding_dim = 512
-    model = InputEmbedding(vocab_size, embedding_dim)
-    input_tokens = torch.tensor([indexed_tokens], dtype=torch.long)
-
-    embeddings = model(input_tokens)
-
-    print("input shape", input_tokens.shape)
-    print("Embeddings Shape:", embeddings.shape)
-    print("Embeddings:", embeddings)
