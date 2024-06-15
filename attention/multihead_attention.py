@@ -7,20 +7,20 @@ from scaled_dot_product import ScaledDotProductAttention
 
 
 class MultiHeadAttention(nn.Module):
-    """Multi-head attention mechanism"""
+    """
+    Multi-head attention mechanism.
+
+    This class implements the multi-head attention mechanism, which allows the model
+    to jointly attend to information from different representation subspaces.
+    """
 
     def __init__(self, n_heads: int, model_dim: int) -> None:
         """
+        Initializes the MultiHeadAttention module.
+
         Args:
-        n_heads (int): Number of attention heads.
-        key_vector_dim (int): Dimension of the key vectors for each head.
-        value_vector_dim (int): Dimension of the value vectors for each head.
-        model_dim (int): Dimension of the model.
-        weight_qs (nn.Linear): Linear layer to project the query vectors.
-        weight_ks (nn.Linear): Linear layer to project the key vectors.
-        weight_vs (nn.Linear): Linear layer to project the value vectors.
-        output_projection (nn.Linear): Linear layer for the final output projection.
-        attention (ScaledDotProductAttention): Scaled dot-product attention mechanism.
+            n_heads (int): Number of attention heads.
+            model_dim (int): Dimension of the model.
         """
         super().__init__()
         assert (
@@ -50,10 +50,10 @@ class MultiHeadAttention(nn.Module):
         Forward pass for multi-head attention.
 
         Args:
-            query (torch.Tensor): Query tensor of shape (batch_size, seq_length, model_dim).
-            key (torch.Tensor): Key tensor of shape (batch_size, seq_length, model_dim).
-            value (torch.Tensor): Value tensor of shape (batch_size, seq_length, model_dim).
-            mask (Optional[torch.Tensor]): Mask tensor of shape (batch_size, seq_length, seq_length). Default is None.
+            query (torch.Tensor): Query tensor of shape `[batch_size, seq_len, model_dim]`.
+            key (torch.Tensor): Key tensor of shape `[batch_size, seq_len, model_dim]`.
+            value (torch.Tensor): Value tensor of shape `[batch_size, seq_len, model_dim]`.
+            mask (Optional[torch.Tensor]): Mask tensor of shape `[batch_size, seq_len, seq_len]`. Default is None.
 
         Returns:
             torch.Tensor: Output tensor after applying multi-head attention.

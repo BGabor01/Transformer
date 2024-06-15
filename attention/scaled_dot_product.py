@@ -7,10 +7,10 @@ import torch.nn.functional as F
 
 class ScaledDotProductAttention(nn.Module):
     """
-    Scaled Dot-Product Attention mechanism
+    Scaled Dot-Product Attention mechanism.
 
     This mechanism computes the attention weights and the corresponding
-    weighted sum of the values
+    weighted sum of the values.
     """
 
     def __init__(self, temperature: float) -> None:
@@ -34,13 +34,13 @@ class ScaledDotProductAttention(nn.Module):
         Perform the forward pass for scaled dot-product attention.
 
         Args:
-            query (torch.Tensor): Query tensor of shape (batch_size, seq_length, d_model).
-            key (torch.Tensor): Key tensor of shape (batch_size, seq_length, d_model).
-            value (torch.Tensor): Value tensor of shape (batch_size, seq_length, d_model).
-            mask (Optional[torch.Tensor]): Mask tensor of shape (batch_size, seq_length, seq_length), default is None.
+            query (torch.Tensor): Query tensor of shape `[batch_size, seq_len, d_model]`.
+            key (torch.Tensor): Key tensor of shape `[batch_size, seq_len, d_model]`.
+            value (torch.Tensor): Value tensor of shape `[batch_size, seq_len, d_model]`.
+            mask (Optional[torch.Tensor]): Mask tensor of shape `[batch_size, seq_len, seq_len]`, default is None.
 
         Returns:
-            Tuple[torch.Tensor, torch.Tensor]: Output tensor and attention weights.
+            Tuple[torch.Tensor, torch.Tensor]: Output tensor of shape `[batch_size, seq_len, d_model]` and attention weights of shape `[batch_size, seq_len, seq_len]`.
         """
         attention = torch.matmul(query / self.temperature, key.transpose(-2, -1))
 
