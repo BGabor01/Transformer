@@ -8,9 +8,23 @@ from neural_network import FeedForward
 
 
 class DecoderLayer(nn.Module):
+    """
+    Decoder layer consisting of masked multi-head attention, encoder-decoder multi-head attention,
+    and feed-forward neural network.
+    """
+
     def __init__(
         self, n_heads: int, model_dim: int, ff_dim: int, dropout: Optional[float] = 0.01
     ) -> None:
+        """
+        Initializes the DecoderLayer module.
+
+        Args:
+            model_dim (int): Dimension of the model.
+            n_heads (int): Number of attention heads.
+            ff_dim (int): Dimension of the feed-forward layer.
+            dropout (float): Dropout rate. Default is 0.1.
+        """
         super().__init__()
         self.masker_attn = MultiHeadAttention(n_heads, model_dim)
         self.enc_dec_attn = MultiHeadAttention(n_heads, model_dim)
