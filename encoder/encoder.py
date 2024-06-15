@@ -51,9 +51,9 @@ class Encoder(nn.Module):
         Returns:
             torch.Tensor: Output tensor of shape `[batch_size, seq_len, model_dim]`.
         """
-        embeddings = self.input_embedding(input)
+        input = self.input_embedding(input)
 
         for layer in self.layers:
-            input = layer(embeddings, input_mask)
+            input = layer(input, input_mask)
 
         return self.norm(input)
