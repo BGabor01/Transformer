@@ -3,7 +3,7 @@ from typing import Optional
 import torch
 import torch.nn as nn
 
-from scaled_dot_product import ScaledDotProductAttention
+from .scaled_dot_product import ScaledDotProductAttention
 
 
 class MultiHeadAttention(nn.Module):
@@ -85,20 +85,3 @@ class MultiHeadAttention(nn.Module):
         )
         output = self.output_projection(output)
         return output
-
-
-if __name__ == "__main__":
-    batch_size = 2
-    seq_length = 5
-    model_dim = 8
-    n_heads = 2
-
-    q = torch.rand(batch_size, seq_length, model_dim)
-    k = torch.rand(batch_size, seq_length, model_dim)
-    v = torch.rand(batch_size, seq_length, model_dim)
-
-    mask = torch.ones(batch_size, seq_length, seq_length)
-
-    multihead_attention = MultiHeadAttention(n_heads, model_dim)
-    output = multihead_attention(q, k, v, mask)
-    print(output)

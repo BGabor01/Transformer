@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-from positional_encoding import PositionalEncoding
+from .positional_encoding import PositionalEncoding
 
 
 class InputEmbedding(nn.Module):
