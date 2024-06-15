@@ -53,26 +53,3 @@ class ScaledDotProductAttention(nn.Module):
         output = torch.matmul(attention, value)
 
         return output, attention
-
-
-if __name__ == "__main__":
-    import math
-
-    batch_size = 2
-    seq_length = 5
-    d_model = 8
-    temperature = math.sqrt(d_model)
-
-    q = torch.rand(batch_size, seq_length, d_model)
-    k = torch.rand(batch_size, seq_length, d_model)
-    v = torch.rand(batch_size, seq_length, d_model)
-
-    # All ones in this case, meaning no masking effect
-    mask = torch.ones(batch_size, seq_length, seq_length)
-
-    attention = ScaledDotProductAttention(temperature)
-
-    output, attn_weights = attention(q, k, v, mask)
-
-    print("Output:", output)
-    print("Attention Weights:", attn_weights)

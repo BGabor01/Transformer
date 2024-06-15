@@ -1,1 +1,1 @@
-from .input_embedding import InputEmbedding
+from .encoder import Encoder
