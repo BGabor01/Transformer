@@ -32,7 +32,7 @@ class Decoder(nn.Module):
         encoder_mask: Optional[torch.Tensor] = None,
     ) -> torch.Tensor:
 
-        taget = self.target_embedding(target)
+        target = self.target_embedding(target)
 
         for layer in self.layers:
             target = layer(target, encoder_output, target_mask, encoder_mask)
