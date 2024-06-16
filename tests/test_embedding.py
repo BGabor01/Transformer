@@ -30,3 +30,7 @@ class TestEnbedding:
         assert (
             embedding.embeddings.weight.grad is not None
         ), "Gradients are not computed"
+
+
+if __name__ == "__main__":
+    pytest.main()
