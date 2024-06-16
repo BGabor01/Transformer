@@ -1,3 +1,4 @@
+from typing import Optional
 import torch
 import torch.nn as nn
 
@@ -5,43 +6,30 @@ from .positional_encoding import PositionalEncoding
 
 
 class InputEmbedding(nn.Module):
-    """
-    Input embedding class that combines word embeddings with positional encodings.
+    """Embedding layer with positional encoding for input sequences."""
 
-    This class creates word embeddings for a given vocabulary size and embedding dimension,
-    and then adds positional encodings to these embeddings to provide information about the position
-    of each token in the sequence
-    """
-
-    def __init__(self, vocab_size: int, embedding_dim: int) -> None:
+    def __init__(
+        self, vocab_size: int, embedding_dim: int, dropout: Optional[float] = 0.1
+    ) -> None:
         """
-        Initializes the InputEmbedding layer.
-
         Args:
             vocab_size (int): Size of the vocabulary.
-            embedding_dim (int): Dimension of the embedding vectors.
+            embedding_dim (int): Dimensionality of the embeddings.
         """
         super().__init__()
-        self.vocab_size = vocab_size
-        self.embedding_dim = embedding_dim
         self.embeddings = nn.Embedding(vocab_size, embedding_dim)
-        self.pos_encode = PositionalEncoding(embedding_dim)
+        self.pos_encode = PositionalEncoding(embedding_dim, dropout)
 
-    def forward(self, input: torch.Tensor):
+    def forward(self, input: torch.Tensor) -> torch.Tensor:
         """
-        Forward pass for the input embedding layer.
-
-        This method takes input token indices, converts them to embeddings, adds positional encodings,
-        and applies dropout.
+        Forward pass for the input embedding layer. Apply position encoding
 
         Args:
-            input (torch.Tensor): Input tensor of shape ``[batch_size, seq_len]``, where batch_size is the number of sequences in the batch,
-                                  and seq_len is the sequence length.
+            input (torch.Tensor): Input tensor of shape ``[batch_size, seq_len]`` containing token indices.
 
         Returns:
-            torch.Tensor: Output tensor with word embeddings and positional encodings added, of shape ``[batch_size, seq_len, embedding_dim]``.
+            torch.Tensor: Output tensor of shape ``[batch_size, seq_len, embedding_dim]`` containing the embeddings with positional encoding.
         """
         embeddings = self.embeddings(input)
         embed_with_pos = self.pos_encode(embeddings)
-
         return embed_with_pos
