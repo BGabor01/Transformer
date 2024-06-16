@@ -1,4 +1,5 @@
 from typing import Optional, Tuple
+import math
 
 import torch
 import torch.nn as nn
@@ -7,49 +8,58 @@ import torch.nn.functional as F
 
 class ScaledDotProductAttention(nn.Module):
     """
-    Scaled Dot-Product Attention mechanism.
+    Scaled dot-product attention mechanism
+    Calculates the weighted sums of the attention scores.
 
-    This mechanism computes the attention weights and the corresponding
-    weighted sum of the values.
+    Attributes:
+        value_dim (int): Dimensionality of the value vectors.
     """
 
-    def __init__(self, temperature: float) -> None:
-        """
-        Initializes the ScaledDotProductAttention module.
-
-        Args:
-            temperature (float): Scaling factor, typically the square root of the key dimension.
-        """
+    def __init__(self, value_dim: int):
         super().__init__()
-        self.temperature = temperature
+        self.value_dim = value_dim
 
     def forward(
         self,
         query: torch.Tensor,
         key: torch.Tensor,
         value: torch.Tensor,
-        mask: Optional[torch.Tensor] = None,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        query_len: int,
+        value_len: int,
+        pad_mask: Optional[torch.Tensor] = None,
+        casual: Optional[bool] = False,
+        casual_mask: Optional[torch.Tensor] = None,
+    ) -> torch.Tensor:
         """
-        Perform the forward pass for scaled dot-product attention.
+        Forward pass for the scaled dot-product attention mechanism.
 
         Args:
-            query (torch.Tensor): Query tensor of shape `[batch_size, seq_len, d_model]`.
-            key (torch.Tensor): Key tensor of shape `[batch_size, seq_len, d_model]`.
-            value (torch.Tensor): Value tensor of shape `[batch_size, seq_len, d_model]`.
-            mask (Optional[torch.Tensor]): Mask tensor of shape `[batch_size, seq_len, seq_len]`, default is None.
+            query (torch.Tensor): Query tensor of shape ``[batch_size, n_heads, seq_len, key_dim]``.
+            key (torch.Tensor): Key tensor of shape ``[batch_size, n_heads, seq_len, key_dim]``.
+            value (torch.Tensor): Value tensor of shape ``[batch_size, n_heads, seq_len, key_dim]``.
+            query_len (int): Length of the query sequence.
+            value_len (int): Length of the value sequence.
+            pad_mask (Optional[torch.Tensor]): Padding mask tensor of shape ``[batch_size, seq_len]`` (default is None).
+            causal (Optinal[bool]): Whether to apply a causal mask (default is False).
+            causal_mask (Optional[torch.Tensor]): Causal mask tensor of shape ``[1, 1, max_len, max_len]`` (default is None).
 
         Returns:
-            Tuple[torch.Tensor, torch.Tensor]: Output tensor of shape `[batch_size, seq_len, d_model]` and attention weights of shape `[batch_size, seq_len, seq_len]`.
+            torch.Tensor: Output tensor of shape ``[batch_size, n_heads, seq_len, value_dim]``.
         """
-        attention = torch.matmul(query / self.temperature, key.transpose(-2, -1))
+        attn_scores = torch.matmul(query, key.transpose(-2, -1)) / math.sqrt(
+            self.value_dim
+        )
+        if pad_mask is not None:
+            # Reshape the mask from [batch_size, seq_len] -> [batch_size, None, None, seq_len]
+            attn_scores = attn_scores.masked_fill(
+                pad_mask[:, None, None, :] == 0, float("-inf")
+            )
 
-        if mask is not None:
-            # Ensures that when the softmax function is applied, the corresponding probabilities are effectively zero
-            attention = attention.masked_fill(mask == 0, -1e9)
+        if casual and casual_mask is not None:
+            attn_scores = attn_scores.masked_fill(
+                casual_mask[:, :, :query_len, :value_len] == 0, float("-inf")
+            )
 
-        attention = F.softmax(attention, dim=-1)
-
-        output = torch.matmul(attention, value)
-
-        return output, attention
+        attn_weights = F.softmax(attn_scores, dim=-1)
+        weighted_sum = torch.matmul(attn_weights, value)
+        return weighted_sum
