@@ -3,7 +3,7 @@ from typing import Optional
 import torch
 import torch.nn as nn
 
-from attention import MultiHeadAttention
+from model.attention import MultiHeadAttention
 
 
 class EncoderBlock(nn.Module):

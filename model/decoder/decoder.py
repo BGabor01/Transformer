@@ -2,7 +2,7 @@ from typing import Optional
 
 import torch.nn as nn
 
-from embedding import InputEmbedding
+from model.embedding import InputEmbedding
 from .decoder_block import DecoderBlock
 
 
