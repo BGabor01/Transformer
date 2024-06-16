@@ -3,62 +3,62 @@ from typing import Optional
 import torch
 import torch.nn as nn
 
-from embedding import InputEmbedding
-from transformer import TransformerBlock
+from attention import MultiHeadAttention
 
 
 class Encoder(nn.Module):
     """
-    Encoder consisting of multiple Transformer blocks.
-
-    This module encodes the input sequence into a continuous representation that
-    the decoder can use to generate the output sequence.
+    Encoder layer with multi-head attention and feedforward network.
     """
 
     def __init__(
         self,
-        vocab_size: int,
+        key_dim: int,
+        value_dim: int,
         model_dim: int,
-        n_layers: int,
         n_heads: int,
-        ff_dim: int,
+        max_len: int,
         dropout: Optional[float] = 0.1,
-    ):
+    ) -> None:
         """
-        Initializes the Encoder module.
-
         Args:
-            vocab_size (int): Size of the vocabulary.
-            model_dim (int): Dimension of the model.
-            n_layers (int): Number of encoder layers.
+            key_dim (int): Dimensionality of the key and query vectors.
+            value_dim (int): Dimensionality of the value vectors.
+            model_dim (int): Dimensionality of the input and output features.
             n_heads (int): Number of attention heads.
-            ff_dim (int): Dimension of the feed-forward layer.
-            dropout (Optional[float]): Dropout rate. Default is 0.1.
+            max_len (int): Maximum length of the input sequences.
+            dropout (Optional[float]): Dropout rate (default is 0.1).
         """
         super().__init__()
-        self.input_embedding = InputEmbedding(vocab_size, model_dim)
-        self.transformer_blocks = nn.ModuleList(
-            [
-                TransformerBlock(model_dim, n_heads, ff_dim, dropout)
-                for _ in range(n_layers)
-            ]
+        self.norm_layer1 = nn.LayerNorm(model_dim)
+        self.norm_layer2 = nn.LayerNorm(model_dim)
+        self.multihead_attn = MultiHeadAttention(
+            model_dim, key_dim, value_dim, max_len, n_heads, casual=False
         )
-        self.norm = nn.LayerNorm(model_dim)
+        self.ff_network = nn.Sequential(
+            nn.Linear(model_dim, model_dim * 4),
+            nn.GELU(),
+            nn.Linear(model_dim * 4, model_dim),
+            nn.Dropout(dropout),
+        )
+        self.droput = nn.Dropout(dropout)
 
     def forward(
-        self, input: torch.Tensor, input_mask: Optional[torch.Tensor] = None
+        self, input: torch.Tensor, pad_mask: Optional[torch.Tensor] = None
     ) -> torch.Tensor:
         """
-        Forward pass for the encoder.
+        Forward pass for the encoder layer.
 
         Args:
-            input (torch.Tensor): Input tensor of shape `[batch_size, seq_len]`.
-            input_mask (Optional[torch.Tensor]): Mask tensor of shape `[batch_size, 1, 1, seq_len]`. Default is None.
+            input (torch.Tensor): Input tensor of shape ``[batch_size, seq_len, model_dim]``.
+            pad_mask (Optional[torch.Tensor]): Padding mask tensor of shape ``[batch_size, seq_len]`` (default is None).
 
         Returns:
-            torch.Tensor: Output tensor of shape `[batch_size, seq_len, model_dim]`.
+            torch.Tensor: Output tensor of shape ``[batch_size, seq_len, model_dim]``.
         """
-        input = self.input_embedding(input)
-        for layer in self.transformer_blocks:
-            input = layer(input, input_mask)
-        return self.norm(input)
+        input = self.norm_layer1(
+            input + self.multihead_attn(input, input, input, pad_mask)
+        )
+        input = self.norm_layer2(input + self.ff_network(input))
+        input = self.droput(input)
+        return input
