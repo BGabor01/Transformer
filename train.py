@@ -82,8 +82,7 @@ logger.info("Model initialized.")
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 seq_to_seq_model.to(device)
-logger.info(f"Using device: {device}")
-
+logger.info(f"Using device: {torch.cuda.get_device_name(device)}")
 criteria = nn.CrossEntropyLoss(
     ignore_index=-100
 )  # The tokenizer sets the targets padding to -100
