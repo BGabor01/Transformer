@@ -43,6 +43,7 @@ tokenized_dataset = dataset.map(
     tokenize,
     batched=True,
     remove_columns=dataset.column_names,
+    cache_file_name="mapped_dataset",
 )
 logger.info("Dataset tokenized.")
 
@@ -90,7 +91,7 @@ optimizer = torch.optim.Adam(seq_to_seq_model.parameters())
 
 
 def train(
-    model: torch.Module,
+    model: nn.Module,
     num_epochs: int,
     train_data_loader: DataLoader,
     criteria: nn.CrossEntropyLoss,
