@@ -26,7 +26,7 @@ class Config:
     num_layers: int = field(default=6)
     dropout: float = field(default=0.1)
     max_seq_length: int = field(default=100)
-    bf16: bool = field(default=True)
+    mixed_precision: bool = field(default=True)
 
     @classmethod
     def load_config_file(cls, file_path: str) -> "Config":

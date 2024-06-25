@@ -133,7 +133,7 @@ def train(
             decoder_mask = decoder_mask.masked_fill(decoder_mask == pad_token_id, 0)
 
             # Torch auto mix precision
-            with torch.autocast(enabled=config.bf16, device_type="cuda"):
+            with torch.autocast(enabled=config.mixed_precision, device_type="cuda"):
                 outputs = model(
                     encoder_input, decoder_input, encoder_mask, decoder_mask
                 )

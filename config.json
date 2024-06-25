@@ -10,5 +10,5 @@
   "num_layers": 6,
   "dropout": 0.1,
   "max_seq_length": 100,
-  "bf16": true
+  "mixed_precision": true
 }
