@@ -33,21 +33,24 @@ pip install -r requirements.txt
 ```
 
 ## Training
-To train the Transformer model, run the training script with the appropriate arguments:
+To train the Transformer model, run the training script with a configuration file. The configuration file allows you to specify all necessary parameters for training.
 
-```
-python train.py --train_data path/to/your/data --epochs 10 --batch_size 32 --learning_rate 0.001 --mixed_precision true
-Arguments
---train_data: Path to the training dataset. It can be on your local machine or on HuggingFace
---epochs: Number of training epochs
---batch_size: Batch size for training
---learning_rate: Learning rate for the optimizer
---mixed_precision: Use mixed precision during training
-```
-Or
+You can use the `config.json` file where you provide the following parameters:
 
-You can use the ``config.json`` file where you can provide all the arguments above and also modify the model's parameters
-The provided training script is set up for language translation and using the ``wmt14`` dataset and the tokenizer of the ``Helsinki-NLP/opus-mt-en-de`` model. </br>
+- `train_data`: Path to the training dataset. It can be on your local machine or on HuggingFace.
+- `epochs`: Number of training epochs.
+- `batch_size`: Batch size for training.
+- `learning_rate`: Learning rate for the optimizer.
+- `mixed_precision`: Use mixed precision during training.
+- `valid_data`: Path to the validation dataset.
+- `model_dim`: Dimensionality of the model.
+- `hidden_dims`: Dimensionality of the hidden layers.
+- `num_heads`: Number of attention heads.
+- `num_layers`: Number of encoder/decoder layers.
+- `dropout`: Dropout rate.
+- `max_seq_length`: Maximum sequence length.
+
+The provided training script is set up for language translation using the `wmt14` dataset and the tokenizer of the `Helsinki-NLP/opus-mt-en-de` model.
 
 ## Model Architecture
 The Transformer model consists of an encoder and a decoder.
