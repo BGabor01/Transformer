@@ -1,10 +1,9 @@
 # Seq-to-Seq Transformer Model from Scratch in PyTorch
 
-This project implements a Transformer model from scratch using PyTorch. It includes a training script to train the model on a custom dataset.
+This project implements a Transformer model from scratch using PyTorch. It includes a training script to train the model on a custom dataset and supports distributed training.
 
 ## Table of Contents
 
-- [Overview](#overview)
 - [Features](#features)
 - [Installation](#installation)
 - [Usage](#usage)
@@ -12,10 +11,6 @@ This project implements a Transformer model from scratch using PyTorch. It inclu
 - [Model Architecture](#model-architecture)
   - [Encoder](#encoder)
   - [Decoder](#decoder)
-
-## Overview
-
-This project demonstrates how to build a Transformer model from scratch using PyTorch. The project includes a training script to train the model.
 
 ## Features
 
@@ -41,7 +36,6 @@ You can use the `config.json` file where you provide the following parameters:
 - `epochs`: Number of training epochs.
 - `batch_size`: Batch size for training.
 - `learning_rate`: Learning rate for the optimizer.
-- `mixed_precision`: Use mixed precision during training.
 - `valid_data`: Path to the validation dataset.
 - `model_dim`: Dimensionality of the model.
 - `hidden_dims`: Dimensionality of the hidden layers.
@@ -51,6 +45,15 @@ You can use the `config.json` file where you provide the following parameters:
 - `max_seq_length`: Maximum sequence length.
 
 The provided training script is set up for language translation using the `wmt14` dataset and the tokenizer of the `Helsinki-NLP/opus-mt-en-de` model.
+
+### Distributed Training
+The training script supports distributed training using `Fully Sharded Data Parallel` (FSDP) with Hugging Face's `accelerate` library. This allows you to efficiently train large models across multiple GPUs or nodes.
+
+The settings for accelerate are found in `accelerate_config.yaml`.
+To start the training you can use the CLI command:
+```bash
+accelerate launch --config-file accelerate_config.yaml train.py
+```
 
 ## Model Architecture
 The Transformer model consists of an encoder and a decoder.
