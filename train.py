@@ -91,7 +91,7 @@ logger.info("Model initialized.")
 criteria = nn.CrossEntropyLoss(
     ignore_index=-100
 )  # The tokenizer sets the targets padding to -100
-optimizer = torch.optim.Adam(seq_to_seq_model.parameters())
+optimizer = torch.optim.Adam(seq_to_seq_model.parameters(), lr=config.learning_rate)
 
 seq_to_seq_model, optimizer, train_data_loader = accelerator.prepare(
     seq_to_seq_model, optimizer, train_data_loader
